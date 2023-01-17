@@ -6,9 +6,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 //Singleton
 public class RetrofitManager {
 
-    private static RetrofitManager mInstance = new RetrofitManager();
+    private static final RetrofitManager mInstance = new RetrofitManager();
 
-    private MyAPIService myAPIService;
+    private final MyAPIService myAPIService;
 
     private RetrofitManager(){
 

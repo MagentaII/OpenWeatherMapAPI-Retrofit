@@ -22,11 +22,11 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final String APIKEY = "d78b07546e8f32d14a6e92b7c1f9524d";
     private Button btnGetWeatherByCityName, btnGetWeatherByCityID, btnGetCityID;
     private EditText etDataInput;
     private RecyclerView recyclerViewWeather;
     MyAPIService myAPIService;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,31 +34,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initializeVariables();
+        String cityName = etDataInput.getText().toString();
 
         btnGetCityID.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                myAPIService = RetrofitManager.getInstance().getAPI();
-
-                Call<OpenWeather> call = myAPIService.getWeatherData();
-
-                call.enqueue(new Callback<OpenWeather>() {
-                    @Override
-                    public void onResponse(Call<OpenWeather> call, Response<OpenWeather> response) {
-                        OpenWeather openWeather = response.body();
-                        List<Weather> des = openWeather.getWeather();
-                        for(Weather data : des){
-                            Toast.makeText(MainActivity.this, data.getMain(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<OpenWeather> call, Throwable t) {
-                        Toast.makeText(MainActivity.this, "Something error", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-
+                getCityID(cityName);
             }
         });
 
@@ -66,13 +47,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+
             }
         });
 
         btnGetWeatherByCityName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                getWeatherByCityName(cityName);
             }
         });
 
@@ -84,7 +66,68 @@ public class MainActivity extends AppCompatActivity {
         btnGetCityID = findViewById(R.id.btn_getCityID);
         etDataInput = findViewById(R.id.et_dataInput);
         recyclerViewWeather = findViewById(R.id.recyclerView_weatherReports);
+    }
 
+    private void getWeather(){
+        myAPIService = RetrofitManager.getInstance().getAPI();
+
+        Call<OpenWeather> call = myAPIService.getWeatherData();
+
+        call.enqueue(new Callback<OpenWeather>() {
+            @Override
+            public void onResponse(Call<OpenWeather> call, Response<OpenWeather> response) {
+                OpenWeather openWeather = response.body();
+                List<Weather> des = openWeather.getWeather();
+                for(Weather data : des){
+                    Toast.makeText(MainActivity.this, data.getMain(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OpenWeather> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Something error", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getCityID(String cityName){
+        myAPIService = RetrofitManager.getInstance().getAPI();
+
+        Call<OpenWeather> call = myAPIService.getCityName(cityName);
+        call.enqueue(new Callback<OpenWeather>() {
+            @Override
+            public void onResponse(Call<OpenWeather> call, Response<OpenWeather> response) {
+                int id = response.body().getId();
+                Toast.makeText(MainActivity.this, String.valueOf(id), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<OpenWeather> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Something wrong", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getWeatherByCityName(String cityName){
+        myAPIService = RetrofitManager.getInstance().getAPI();
+
+        Call<OpenWeather> call = myAPIService.getCityName(cityName);
+        call.enqueue(new Callback<OpenWeather>() {
+            @Override
+            public void onResponse(Call<OpenWeather> call, Response<OpenWeather> response) {
+                List<Weather> weatherList = response.body().getWeather();
+
+                for(Weather data : weatherList){
+                    Toast.makeText(MainActivity.this, data.getMain(), Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<OpenWeather> call, Throwable t) {
+
+            }
+        });
     }
 
 }
